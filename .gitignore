@@ -1,2 +1,3 @@
 .vscode
 gym_gridworld.egg-info
+__pycache__/

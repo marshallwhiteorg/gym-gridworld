@@ -20,18 +20,18 @@ class GridWorldEnv(gym.Env):
     state = start_state
     done = False
     terminal_state = None
-    nrows = -1
-    ncols = -1
+    height = -1
+    width = -1
     
 
-    def __init__(self, ncols=4, nrows=4):
-        assert nrows > 1, ncols > 1
+    def __init__(self, width=4, height=4):
+        assert height > 1, width > 1
         self.action_space = gym.spaces.Discrete(len(list(Action)))
         self.observation_space = gym.spaces.Box(
-            low=np.array([0, 0]), high=np.array([ncols-1, nrows-1]))
-        self.terminal_state = (ncols-1, nrows-1)
-        self.nrows = nrows
-        self.ncols = ncols
+            low=np.array([0, 0]), high=np.array([width-1, height-1]))
+        self.terminal_state = (width-1, height-1)
+        self.height = height
+        self.width = width
 
     def step(self, action: int) -> StepResult:
         # Must call reset() after the episode is over
@@ -47,28 +47,27 @@ class GridWorldEnv(gym.Env):
     def reset(self):
         self.state = self.start_state
         self.done = False
+        return self.state
 
     def render(self, mode='ansi'):
         grid_repr = ''
-        for x in range(self.ncols):
-            if x > 0:
+        for row in range(self.height):
+            if row > 0:
                 grid_repr += '\n'
-            for y in range(self.nrows):
-                if np.array_equal([y, x], self.state):
+            for col in range(self.width):
+                if np.array_equal([col, row], self.state):
                     grid_repr += ' A '
-                elif np.array_equal([y, x], self.terminal_state):
+                elif np.array_equal([col, row], self.terminal_state):
                     grid_repr += ' T '
                 else:
                     grid_repr += ' o '
-        print(grid_repr)
+        print(grid_repr + '\n')
 
     def close(self):
         pass
 
     def _advance(self, action):
         maybe_state = self.state + self._action_mod(action)
-        print(self.state)
-        print(maybe_state)
         if self.observation_space.contains(maybe_state):
             return maybe_state
         else:
